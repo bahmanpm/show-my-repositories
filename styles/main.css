@@ -1,0 +1,41 @@
+nav {
+    color: #000;
+    background-color: transparent;
+    box-shadow: none;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
+div#userInfo {
+    min-width: 250px;
+}
+
+div#userInfo p {
+    text-align: center;
+    font-weight: bold;
+}
+
+div.form-content {
+    display: inline-block; 
+    padding: 32px 48px 0px 48px; 
+    border: 1px solid #EEE;
+    float: left;
+    height: 100vh;
+    margin: 0;
+}
+
+p {
+    text-align: left;
+}
+
+div.row, div.input-field {
+    margin: 0;
+}
+
+img.responsive-img {
+    width: 120px;
+    height: 120px;
+}
+
+span#message {
+    font-weight: bold;
+}

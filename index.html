@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="styles/materialize.min.css" media="screen,projection" />
+    <link type="text/css" rel="stylesheet" href="styles/main.css" media="screen,projection" />
+
+</head>
+<body>
+  <div class="row">
+    <div class="col s3">
+      <main>
+          <center>
+            <div>
+              <div class="z-depth-1 grey lighten-4 row form-content">
+      
+                <!-- <form class="col s12"> -->
+                  <div class='row'>
+                    <div class='col s12' id="userInfo"></div>
+                  </div>
+                  <div class="divider"></div>
+                  <p>
+                      <label>
+                        <input name="public-or-private" type="radio" id="public" onchange="publicOrPrivate('public')" checked/>
+                        <span>Get Public Repos</span>
+                      </label>
+                    </p>
+                    <p>
+                      <label>
+                        <input name="public-or-private" type="radio" id="private" onchange="publicOrPrivate('private')"/>
+                        <span>Get Public & Private Repos</span>
+                      </label>
+                    </p>
+                    <div class="divider"></div>
+                  <p>
+                      <label>
+                        <input name="basic-or-token" type="radio" id="basic"  onchange="basicOrToken('basic')" checked/>
+                        <span>Basic Auth</span>
+                      </label>
+                    </p>
+                    <p>
+                      <label>
+                        <input name="basic-or-token" type="radio" id="token" onchange="basicOrToken('token')"/>
+                        <span>Login Via Access Token</span>
+                      </label>
+                    </p>
+                  <div class="divider"></div>
+                  <div class='row'>
+                    <div class='input-field col s12'>
+                      <input class='validate' type='text' placeholder="Username" name='Username' id='username' required/>
+                      <!-- <label for='username'>Username</label> -->
+                    </div>
+                  </div>
+      
+                  <div class='row'>
+                    <div class='input-field col s12'>
+                      <input class='validate' type='password' placeholder="Password" name='password' id='password'/>
+                      <!-- <label for='password'>Password</label> -->
+                    </div>
+                  </div>
+
+                  <div class='row'>
+                      <div class='input-field col s12'>
+                        <input class='validate' type='text' placeholder="Personal Access Token" name='accessToken' id='accessToken' />
+                        <!-- <label for='accessToken'>Personal Access Token</label> -->
+                      </div>
+                    </div>
+      
+                  <br />
+                  <center>
+                    <div class='row'>
+                      <button name='btn_login' class='col s12 btn btn-large waves-effect indigo' onclick="login5()">Get Repos</button>
+                      <!-- <button name='btn_login' class='col s12 btn btn-large waves-effect indigo' onclick="login2()">Login2</button>
+                      <button name='btn_login' class='col s12 btn btn-large waves-effect indigo' onclick="login3()">Login3</button>
+                      <button name='btn_login' class='col s12 btn btn-large waves-effect indigo' onclick="login4()">Login4</button>
+                      <button name='btn_login' class='col s12 btn btn-large waves-effect indigo' onclick="login5()">Login5</button> -->
+                    </div>
+                  </center>
+                <!-- </form> -->
+              </div>
+            </div>
+          </center>
+      </main>
+    </div>
+    <div class="col s9">
+        <nav>
+            <div class="row">
+              <div class="col s4">Status : <span id="message"></span></div>
+              <div class="col s4">Public Repos : <span id="publicReposNumber"></span></div>
+              <div class="col s4">Private Repos : <span id="privateReposNumber"></span> </div>
+            </div>
+          </nav>
+        <table class="highlight">
+            <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Stars</th>
+                  <th>Issues</th>
+                  <th>Since</th>
+                  <th>Type</th>
+              </tr>
+            </thead>
+    
+            <tbody id="reposInfo">
+              
+            </tbody>
+          </table>
+    </div>
+  </div>
+
+    <script type="text/javascript" src="scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="scripts/materialize.min.js"></script>
+    <script type="text/javascript" src="scripts/init.js"></script>
+    <script type="text/javascript" src="scripts/main.js"></script>
+</body>
+</html>
