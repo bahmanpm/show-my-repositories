@@ -14,3 +14,7 @@ Show any user public repositories via username and also private repositories wit
 3- Run Project with Gulp: 
 
     gulp
+
+Or if you haven't Gulp, Open index.html in your browser.
+
+Goodluck.
