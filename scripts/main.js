@@ -3,8 +3,8 @@
 // jshint curly: true
 // jshint eqeqeq: true
 // jshint globals: true
-// jshint maxcomplexity: 2
-// jshint maxdepth: 2
+// jshint maxcomplexity: 3
+// jshint maxdepth: 3
 // jshint nonbsp: true
 // jshint browser: true
 // jshint devel: true
@@ -13,6 +13,11 @@
 /* exported publicOrPrivate */
 /* exported basicOrToken */
 /* exported getRepos */
+/* exported currentStatus */
+/* exported checkRequestedReposType */
+/* exported checkRequestedAuthType */
+/* exported handleResponseStatus */
+/* exported publishFetchedData */
 
 // control public and private radio buttons
 function publicOrPrivate(prop) {
@@ -53,59 +58,22 @@ function basicOrToken(prop) {
     }
 }
 
+var requestStatus = true;
+var requestedRepos = "public";
+var url = "";
+var header = {};
+
 // handle req & res
-function getRepos() {
+var getRepos = function(username, password, accessToken, ppRadios, btRadios) {
     "use strict";
     // set message
-    document.getElementById("message").innerHTML = "Waiting For Repos Info ...";
+    currentStatus("message", "Waiting For Repos Info ...");
 
-    // set input values
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-    var accessToken = document.getElementById("accessToken").value;
-
-    // set radio values
-    var ppRadios = document.getElementsByName('public-or-private');
-    var btRadios = document.getElementsByName('basic-or-token');
-    
     // user & pass 2 base64
     var auth = btoa(username + ":" + password);
-    
-    // default values
-    var requestStatus = true;
-    var url = "";
-    var header = {};
-    var requestedRepos = "public";
-    var i, j;
 
-    for (i = 0; i < ppRadios.length; i++) {
-        if (ppRadios[i].checked) {
-            if (ppRadios[i].id === "public") {
-                url = "https://api.github.com/users/"+username+"/repos";
-            }
-            else {
-                url = "https://api.github.com/user/repos";
-                requestedRepos = "private";
-            }
-    
-            break;
-        }
-    }
-
-    if (requestedRepos === "private") {
-        for (j = 0; j < btRadios.length; j++) {
-            if (btRadios[j].checked) {
-                if (btRadios[j].id === "basic") {
-                    header = {'Authorization': "Basic " + auth};
-                }
-                else {
-                    header = {'Authorization': "token " + accessToken};
-                }
-        
-                break;
-            }
-        }
-    }
+    checkRequestedReposType(ppRadios, username);
+    checkRequestedAuthType(btRadios, auth, accessToken);
 
     // send request
     fetch(url, {
@@ -113,67 +81,133 @@ function getRepos() {
         headers: header
     })
     .then(function(data){
-        if (data.status === 200) {
-            // set message
-            document.getElementById("message").innerHTML = "Success";
-        }
-        if (data.status === 404) {
-            // set message
-            document.getElementById("message").innerHTML = "User Not Found!";
-        }
-        if (data.status === 401) {
-            // set message
-            document.getElementById("message").innerHTML = "Unauthorized!";
-        }
-        if (data.status === 404 || data.status === 401) {
-            // set some parameters in page if status code is 404 or 401
-            document.getElementById("userInfo").innerHTML = "<img src='assets/images/default-avatar.jpg' alt='' class='circle responsive-img'><p>...</p>";
-            document.getElementById("publicReposNumber").innerHTML = "Not Available";
-            document.getElementById("privateReposNumber").innerHTML = "Not Available";
-            document.getElementById("reposInfo").innerHTML = "";
-            requestStatus = false;
-        }
+        handleResponseStatus(data);
         return data.json();
     })
     .then(function(res){
-        if (requestStatus) {
-            var myObj = res;
-            var txt = "";
-            var publicReposCount = 0;
-            var privateReposCount = 0;
-            var repoType = "";
-            var x;
-            for (x in myObj) {
-                // count public & private repos
-                if (myObj[x].private === false) {
-                    publicReposCount++; 
-                    repoType = "Public";
-                }
-                else {
-                    privateReposCount++;
-                    repoType = "Private";
-                }
+        publishFetchedData(res);
+    });
+};
 
-                // add data to table
-                txt += "<tr>"+
-                    "<td>" + myObj[x].id + "</td>"+
-                    "<td><a href="+ myObj[x].html_url +">" + myObj[x].name + "</a></td>"+
-                    "<td>" + myObj[x].stargazers_count + "</td>"+
-                    "<td>" + myObj[x].open_issues_count + "</td>"+
-                    "<td>" + myObj[x].created_at + "</td>"+
-                    "<td>" + repoType + "</td>"+
-                "</tr>";
+function currentStatus(id, status) {
+    "use strict";
 
+    document.getElementById(id).innerHTML = status;
+    return true;
+}
+
+function checkRequestedReposType(ppRadios, username) {
+    "use strict"; 
+
+    var i;
+    for (i = 0; i < ppRadios.length; i++) {
+        if (ppRadios[i].checked) {
+            if (ppRadios[i].id === "public") {
+                url = "https://api.github.com/users/"+username+"/repos";
+                return true;
             }
-            document.getElementById("reposInfo").innerHTML = txt;
-            document.getElementById("userInfo").innerHTML = "<img src="+myObj[0].owner.avatar_url+" alt='' class='circle responsive-img'><p>"+myObj[0].owner.login+"</p>";
-            document.getElementById("publicReposNumber").innerHTML = publicReposCount;
-            if (requestedRepos === "private") {
-                document.getElementById("privateReposNumber").innerHTML = privateReposCount;
+            else if (ppRadios[i].id === "private") {
+                url = "https://api.github.com/user/repos";
+                requestedRepos = "private";
+                return true;
             }
             else {
-                document.getElementById("privateReposNumber").innerHTML = "Not Available";
+                return false;
             }
         }
-    });
+    }
+}
+
+function checkRequestedAuthType(btRadios, auth, accessToken) {
+    "use strict";
+
+    if (requestedRepos === "private") {
+        var i;
+        for (i = 0; i < btRadios.length; i++) {
+            if (btRadios[i].checked) {
+                if (btRadios[i].id === "basic") {
+                    header = {'Authorization': "Basic " + auth};
+                }
+                else if (btRadios[i].id === "token") {
+                    header = {'Authorization': "token " + accessToken};
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+    }
+}
+
+function handleResponseStatus(data) {
+    "use strict";
+
+    if (data.status === 200) {
+        // set message
+        currentStatus("message", "Success");
+        requestStatus = true;
+    }
+    if (data.status === 404) {
+        // set message
+        currentStatus("message", "User Not Found!");
+    }
+    if (data.status === 401) {
+        // set message
+        currentStatus("message", "Unauthorized!");
+    }
+    if (data.status === 404 || data.status === 401) {
+        // set some parameters in page if status code is 404 or 401
+        currentStatus("userInfo", "<img src='assets/images/default-avatar.jpg' alt='' class='circle responsive-img'><p>...</p>");
+        currentStatus("publicReposNumber", "Not Available");
+        currentStatus("privateReposNumber", "Not Available");
+        currentStatus("reposInfo", "");
+        requestStatus = false;
+        // return false;
+    }
+    return true;
+}
+
+function publishFetchedData(myObj) {
+    "use strict";
+
+    if (requestStatus) {
+        var txt = "";
+        var publicReposCount = 0;
+        var privateReposCount = 0;
+        var repoType = "";
+        var x;
+        for (x in myObj) {
+            // count public & private repos
+            if (myObj[x].private === false) {
+                publicReposCount++; 
+                repoType = "Public";
+            }
+            else {
+                privateReposCount++;
+                repoType = "Private";
+            }
+
+            // add data to table
+            txt += "<tr>"+
+                "<td>" + myObj[x].id + "</td>"+
+                "<td><a href="+ myObj[x].html_url +">" + myObj[x].name + "</a></td>"+
+                "<td>" + myObj[x].stargazers_count + "</td>"+
+                "<td>" + myObj[x].open_issues_count + "</td>"+
+                "<td>" + myObj[x].created_at + "</td>"+
+                "<td>" + repoType + "</td>"+
+            "</tr>";
+
+        }
+        
+        currentStatus("reposInfo", txt);
+        currentStatus("userInfo", "<img src="+myObj[0].owner.avatar_url+" alt='' class='circle responsive-img'><p>"+myObj[0].owner.login+"</p>");
+        currentStatus("publicReposNumber", publicReposCount);
+        if (requestedRepos === "private") {
+            currentStatus("privateReposNumber", privateReposCount);
+        }
+        else {
+            currentStatus("privateReposNumber", "Not Available");
+        }
+        return true;
+    }
 }

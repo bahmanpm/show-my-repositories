@@ -65,7 +65,7 @@
                   <br />
                   <center>
                     <div class='row'>
-                      <button name='btn_login' class='col s12 btn btn-large waves-effect indigo' onclick="getRepos()">Get Repos</button>
+                      <button name='btn_login' class='col s12 btn btn-large waves-effect indigo' onclick="getRepos(document.getElementById('username').value, document.getElementById('password').value, document.getElementById('accessToken').value, document.getElementsByName('public-or-private'), document.getElementsByName('basic-or-token'))">Get Repos</button>
                     </div>
                   </center>
               </div>
