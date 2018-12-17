@@ -5,6 +5,7 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     uglify = require('gulp-uglify'),
     concat = require('gulp-concat');
+    babel = require('gulp-babel');
 
 var jsSources = ['scripts/*.js'],
     sassSources = ['styles/*.scss'],
@@ -39,7 +40,7 @@ var sassTask = function() {
 
 var jsTask = function() {
   return gulp.src(jsSources)
-  .pipe(uglify())
+  .pipe(babel())
   .pipe(concat('script.js'))
   .pipe(gulp.dest(outputDir))
   .pipe(connect.reload())
